@@ -26,26 +26,33 @@ const consoleFormat = winston.format.combine(
 );
 
 // Configure transports
+// const transports = [
+//     // Console output
+//     new winston.transports.Console({
+//         format: consoleFormat
+//     }),
+//     // Error logs with rotation
+//     new winston.transports.DailyRotateFile({
+//         filename: path.join(logDir, 'error-%DATE%.log'),
+//         datePattern: 'YYYY-MM-DD',
+//         level: 'error',
+//         maxFiles: '14d', // Keep 14 days of logs
+//         handleExceptions: true,
+//         handleRejections: true
+//     }),
+//     // All logs with rotation
+//     new winston.transports.DailyRotateFile({
+//         filename: path.join(logDir, 'combined-%DATE%.log'),
+//         datePattern: 'YYYY-MM-DD',
+//         maxFiles: '14d'
+//     })
+// ];
 const transports = [
-    // Console output
     new winston.transports.Console({
         format: consoleFormat
     }),
-    // Error logs with rotation
-    new winston.transports.DailyRotateFile({
-        filename: path.join(logDir, 'error-%DATE%.log'),
-        datePattern: 'YYYY-MM-DD',
-        level: 'error',
-        maxFiles: '14d', // Keep 14 days of logs
-        handleExceptions: true,
-        handleRejections: true
-    }),
-    // All logs with rotation
-    new winston.transports.DailyRotateFile({
-        filename: path.join(logDir, 'combined-%DATE%.log'),
-        datePattern: 'YYYY-MM-DD',
-        maxFiles: '14d'
-    })
+    new winston.transports.DailyRotateFile({...}),
+    new winston.transports.DailyRotateFile({...})
 ];
 
 const logger = winston.createLogger({

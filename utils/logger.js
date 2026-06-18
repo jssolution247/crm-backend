@@ -1,31 +1,55 @@
 const winston = require('winston');
-require('winston-daily-rotate-file');
-const path = require('path');
-const fs = require('fs');
 
-// Ensure log directory exists
-const logDir = 'logs';
-if (!fs.existsSync(logDir)) {
-    fs.mkdirSync(logDir);
-}
-
-// Define log format
-const logFormat = winston.format.combine(
-    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-    winston.format.errors({ stack: true }),
-    winston.format.splat(),
-    winston.format.json()
-);
-
-// Console format (more readable)
 const consoleFormat = winston.format.combine(
     winston.format.colorize(),
+    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
     winston.format.printf(({ timestamp, level, message, stack }) => {
         return `${timestamp} ${level}: ${stack || message}`;
     })
 );
 
-// Configure transports
+const logger = winston.createLogger({
+    level: process.env.NODE_ENV === 'development' ? 'debug' : 'info',
+    transports: [
+        new winston.transports.Console({
+            format: consoleFormat
+        })
+    ]
+});
+
+logger.stream = {
+    write: (message) => logger.info(message.trim())
+};
+
+module.exports = logger;
+// const winston = require('winston');
+// require('winston-daily-rotate-file');
+// const path = require('path');
+// const fs = require('fs');
+
+// // Ensure log directory exists
+// const logDir = 'logs';
+// if (!fs.existsSync(logDir)) {
+//     fs.mkdirSync(logDir);
+// }
+
+// // Define log format
+// const logFormat = winston.format.combine(
+//     winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+//     winston.format.errors({ stack: true }),
+//     winston.format.splat(),
+//     winston.format.json()
+// );
+
+// // Console format (more readable)
+// const consoleFormat = winston.format.combine(
+//     winston.format.colorize(),
+//     winston.format.printf(({ timestamp, level, message, stack }) => {
+//         return `${timestamp} ${level}: ${stack || message}`;
+//     })
+// );
+
+// // Configure transports
 // const transports = [
 //     // Console output
 //     new winston.transports.Console({
@@ -47,23 +71,16 @@ const consoleFormat = winston.format.combine(
 //         maxFiles: '14d'
 //     })
 // ];
-const transports = [
-    new winston.transports.Console({
-        format: consoleFormat
-    }),
-    new winston.transports.DailyRotateFile({...}),
-    new winston.transports.DailyRotateFile({...})
-];
 
-const logger = winston.createLogger({
-    level: process.env.NODE_ENV === 'development' ? 'debug' : 'info',
-    format: logFormat,
-    transports
-});
+// const logger = winston.createLogger({
+//     level: process.env.NODE_ENV === 'development' ? 'debug' : 'info',
+//     format: logFormat,
+//     transports
+// });
 
-// Create a stream for Morgan integration
-logger.stream = {
-    write: (message) => logger.info(message.trim())
-};
+// // Create a stream for Morgan integration
+// logger.stream = {
+//     write: (message) => logger.info(message.trim())
+// };
 
-module.exports = logger;
+// module.exports = logger;
